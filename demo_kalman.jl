@@ -94,8 +94,8 @@ a_m,p_m = simulate_measurements(a,v,p,I)
 # Set up parameters of Kalman filter and smoother
 dtm = dt*interval
 x = [a_m p_m]'
-mu_0 = [-600,400,20]
-V_0 = diagm([60^2,40^2,2^2])
+mu_0 = [-500,400,20]
+V_0 = diagm([50^2,40^2,2^2])
 F2 = [1 0 0;
      dtm 1 0;
      0.5*dtm^2 dtm 1] # Second-order model
@@ -104,8 +104,8 @@ F = [1 0 0;
      0 dtm 1] # First-order model
 H = [1 0 0;
      0 0 1]
-sigma_a_model = sigma_a
-sigma_p_model = sigma_p
+sigma_a_model = 2
+sigma_p_model = 75
 R = diagm([sigma_a_model^2, sigma_p_model^2])
 Q = diagm([100*dtm,dtm,dtm]) # initial guess
 
@@ -120,6 +120,13 @@ mu_h,V_h = Kalman.smoother(mu,V,P,F)
 a_est = vec(mu_h[1,:]) # estimated acceleration
 v_est = vec(mu_h[2,:]) # estimated velocity
 p_est = vec(mu_h[3,:]) # estimated position
+
+# Save inputs
+# writedlm("x.txt",x')
+# writedlm("true.txt",[a[I] v[I] p[I]])
+# println("dtm = ",dtm)
+# println("n = ",size(x,2))
+
 
 # Compare simpler approach of using an IIR filter
 f = 0.9
@@ -174,7 +181,7 @@ if can_plot
     legend(loc="lower right")
     xlim(0,T_display)
     
-    savefig("pumpkin.png",dpi=150)
+    #savefig("pumpkin.png",dpi=150)
 end
 
 
